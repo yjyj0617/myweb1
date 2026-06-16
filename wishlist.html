@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUPER SOCIAL - WISHLIST</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Times New Roman", Times, serif; color: #111; padding-top: 65px; }
+        a { text-decoration: none; color: inherit; }
+        button { background: none; border: none; font-family: inherit; cursor: pointer; }
+
+        header { position: fixed; top: 0; left: 0; width: 100%; background: #fff; border-bottom: 1px solid #000; z-index: 2000; }
+        nav { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; height: 65px; }
+        
+        
+        .btn-back { font-size: 13px; border: 1px solid #000; padding: 8px 20px; background-color: #fff; }
+        .logo-center { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 20px; font-weight: bold; letter-spacing: 4px; cursor: pointer; }
+        
+        .independent-section { padding: 80px 10%; }
+        .independent-section h3 { font-size: 22px; margin-bottom: 40px; font-weight: normal; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .wishlist-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; }
+        .product-card { width: 100%; cursor: pointer; position: relative; }
+        .product-img-wrapper { position: relative; width: 100%; padding-top: 120%; border: 1px solid #000; background: #fcfcfc; }
+        .product-meta { margin-top: 15px; }
+        .product-meta h4 { font-size: 15px; font-weight: normal; margin-bottom: 5px; }
+        .product-meta p { font-size: 14px; font-weight: bold; }
+        
+        .product-wishlist-btn { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,.9); border: 1px solid #ccc; padding: 5px 8px; cursor: pointer; z-index: 10; color: #e00; border-color: #e00; }
+        
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #111; color: #fff; padding: 12px 28px; opacity: 0; transition: opacity 0.3s; z-index: 9999; }
+        .toast.show { opacity: 1; }
+    </style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<header>
+    <nav>
+        <div class="nav-left"><button class="btn-back" onclick="history.back()">← BACK</button></div>
+        <div class="logo-center" onclick="location.href='index.html'">SUPER SOCIAL</div>
+        <div class="nav-right"></div>
+    </nav>
+</header>
+
+<section class="independent-section">
+    <h3>Wishlist</h3>
+    <div class="wishlist-grid" id="wishGrid"></div>
+</section>
+
+<script>
+    let allProducts = [];
+    let currentCurrency = localStorage.getItem('currency') || 'KRW';
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg; t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    function formatPrice(price) {
+        return currentCurrency === 'USD' ? `$${Math.round(price/1000)}` : `${price.toLocaleString()}원`;
+    }
+
+    function renderWishlist() {
+        allProducts = JSON.parse(localStorage.getItem('allProducts')) || [];
+        const wishedItems = allProducts.filter(x => x.wished);
+        const grid = document.getElementById('wishGrid');
+        
+        if (wishedItems.length === 0) { 
+            grid.innerHTML = '<p style="color:#888; grid-column: span 4; padding: 40px 0;">찜한 상품이 없습니다.</p>'; 
+            return; 
+        }
+        
+        grid.innerHTML = wishedItems.map(p => `
+            <div class="product-card" onclick="openDetail(${p.id})">
+                <div class="product-img-wrapper">
+                    <button class="product-wishlist-btn" onclick="event.stopPropagation(); removeWish(${p.id})">♥</button>
+                </div>
+                <div class="product-meta">
+                    <h4>${p.name}</h4>
+                    <p>${formatPrice(p.price)}</p>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function removeWish(id) {
+        const p = allProducts.find(x => x.id === id);
+        if (p) {
+            p.wished = false;
+            localStorage.setItem('allProducts', JSON.stringify(allProducts));
+            showToast('찜 목록에서 제거되었습니다.');
+            renderWishlist();
+        }
+    }
+
+    function openDetail(id) {
+        const target = allProducts.find(x => x.id === id);
+        if (target) {
+            localStorage.setItem('selectedProduct', JSON.stringify(target));
+            location.href = 'detail.html';
+        }
+    }
+
+    window.onload = renderWishlist;
+</script>
+</body>
+</html>
