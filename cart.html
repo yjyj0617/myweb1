@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUPER SOCIAL - CART</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Times New Roman", Times, serif; color: #111; padding-top: 65px; }
+        button { background: none; border: none; font-family: inherit; cursor: pointer; }
+
+        header { position: fixed; top: 0; left: 0; width: 100%; background: #fff; border-bottom: 1px solid #000; z-index: 2000; }
+        nav { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; height: 65px; }
+        
+        
+        .btn-back { font-size: 13px; border: 1px solid #000; padding: 8px 20px; background-color: #fff; }
+        .logo-center { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 20px; font-weight: bold; letter-spacing: 4px; cursor: pointer; }
+        
+        .independent-section { padding: 80px 10%; max-width: 700px; margin: 0 auto; }
+        h3 { font-size: 24px; margin-bottom: 20px; font-weight: normal; }
+        
+        .cart-select-all-bar { display: flex; align-items: center; gap: 10px; padding-bottom: 15px; border-bottom: 2px solid #000; font-size: 14px; }
+        .cart-select-all-bar input[type="checkbox"], .cart-item-row input[type="checkbox"] { width: 16px; height: 16px; accent-color: #000; cursor: pointer; }
+
+        .cart-item-row { display: flex; align-items: center; gap: 20px; padding: 20px 0; border-bottom: 1px solid #eee; }
+        .cart-img-box { width: 80px; height: 80px; border:1px solid #000; background:#f5f5f5; }
+        .qty-btn { border: 1px solid #ccc; width: 25px; height: 25px; cursor: pointer; }
+        .cart-summary { display: flex; justify-content: space-between; margin-top: 30px; font-size: 18px; font-weight: bold; }
+        .btn-submit-order { background: #000; color: #fff; width: 100%; padding: 15px; margin-top: 20px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="nav-left"><button class="btn-back" onclick="history.back()">← BACK</button></div>
+        <div class="logo-center" onclick="location.href='index.html'">SUPER SOCIAL</div>
+        <div class="nav-right"></div>
+    </nav>
+</header>
+
+<section class="independent-section">
+    <h3>장바구니</h3>
+    
+    <div class="cart-select-all-bar">
+        <input type="checkbox" id="selectAllCheck" onchange="toggleAllCheckboxes(this)" checked>
+        <label for="selectAllCheck" style="cursor:pointer;">전체 선택</label>
+    </div>
+
+    <div id="cartList"></div>
+    <div class="cart-summary">
+        <span id="cartTotal">총 금액 : 0원</span>
+    </div>
+    <button class="btn-submit-order" onclick="submitOrder()">선택 상품 구매하기</button>
+</section>
+
+<script>
+    let cartItems = [];
+    let currentCurrency = localStorage.getItem('currency') || 'KRW';
+
+    function formatPrice(price) {
+        return currentCurrency === 'USD' ? `$${Math.round(price/1000)}` : `${price.toLocaleString()}원`;
+    }
+
+    function renderCart() {
+        cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+        const container = document.getElementById('cartList');
+        
+        if(cartItems.length === 0) {
+            container.innerHTML = '<p style="color:#888; padding: 30px 0;">장바구니가 비어있습니다.</p>';
+            document.getElementById('cartTotal').textContent = "총 금액 : " + formatPrice(0);
+            document.getElementById('selectAllCheck').checked = false;
+            return;
+        }
+
+        container.innerHTML = cartItems.map((item, idx) => {
+            if(item.checked === undefined) item.checked = true;
+            return `
+                <div class="cart-item-row">
+                    <input type="checkbox" class="item-checkbox" data-index="${idx}" ${item.checked ? 'checked' : ''} onchange="toggleItemCheckbox(${idx}, this)">
+                    <div class="cart-img-box"></div>
+                    <div style="flex-grow:1;">
+                        <h4>${item.name}</h4>
+                        <p style="font-size:13px; color:#666;">사이즈: ${item.size}</p>
+                        <strong>${formatPrice(item.price)}</strong>
+                        <div style="margin-top:5px;">
+                            <button class="qty-btn" onclick="changeQty(${idx},-1)">-</button>
+                            <span style="margin:0 10px;">${item.qty}</span>
+                            <button class="qty-btn" onclick="changeQty(${idx},1)">+</button>
+                        </div>
+                    </div>
+                    <button onclick="removeItem(${idx})" style="text-decoration:underline; font-size:13px; cursor:pointer; border:none; background:none;">삭제</button>
+                </div>
+            `;
+        }).join('');
+        
+        calculateTotal();
+    }
+
+    function calculateTotal() {
+        let total = 0;
+        cartItems.forEach(item => {
+            if(item.checked) total += item.price * item.qty;
+        });
+        document.getElementById('cartTotal').textContent = `총 금액 : ${formatPrice(total)}`;
+    }
+
+    function toggleItemCheckbox(idx, checkbox) {
+        cartItems[idx].checked = checkbox.checked;
+        localStorage.setItem('cart', JSON.stringify(cartItems));
+        const allChecked = cartItems.every(item => item.checked);
+        document.getElementById('selectAllCheck').checked = allChecked;
+        calculateTotal();
+    }
+
+    function toggleAllCheckboxes(masterCheckbox) {
+        cartItems.forEach(item => item.checked = masterCheckbox.checked);
+        localStorage.setItem('cart', JSON.stringify(cartItems));
+        document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = masterCheckbox.checked);
+        calculateTotal();
+    }
+
+    function changeQty(idx, d) {
+        cartItems[idx].qty = Math.max(1, cartItems[idx].qty + d);
+        localStorage.setItem('cart', JSON.stringify(cartItems)); 
+        renderCart();
+    }
+
+    function removeItem(idx) {
+        cartItems.splice(idx,1); 
+        localStorage.setItem('cart', JSON.stringify(cartItems)); 
+        renderCart();
+    }
+
+    function submitOrder() {
+        const selectedItems = cartItems.filter(item => item.checked);
+        if(selectedItems.length === 0) {
+            alert('구매할 상품을 선택해 주세요.');
+            return;
+        }
+        localStorage.setItem('shippingCount', (parseInt(localStorage.getItem('shippingCount'))||0) + selectedItems.length);
+        const remainingItems = cartItems.filter(item => !item.checked);
+        localStorage.setItem('cart', JSON.stringify(remainingItems));
+        alert('선택하신 상품의 주문이 완료되었습니다! 마이페이지로 이동합니다.');
+        location.href = 'mypage.html';
+    }
+
+    window.onload = renderCart;
+</script>
+</body>
+</html>
