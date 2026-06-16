@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUPER SOCIAL - LOOKBOOK</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Times New Roman", Times, serif; color: #111; padding-top: 65px; }
+        header { position: fixed; top: 0; left: 0; width: 100%; background: #fff; border-bottom: 1px solid #000; z-index: 2000; }
+        nav { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; height: 65px; }
+        .logo-center { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 20px; font-weight: bold; letter-spacing: 4px; cursor: pointer; }
+        .lookbook-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+        .lookbook-item { height: 100vh; border: 1px solid #eee; background:#fafafa; position: relative; }
+        .lookbook-item::before { content: "WIRE FRAME"; position: absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#ccc; }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="nav-left"><a href="index.html">← BACK HOME</a></div>
+        <div class="logo-center" onclick="location.href='index.html'">SUPER SOCIAL</div>
+        <div class="nav-right"></div>
+    </nav>
+</header>
+
+<div class="lookbook-grid">
+    <div class="lookbook-item"></div><div class="lookbook-item"></div><div class="lookbook-item"></div>
+    <div class="lookbook-item"></div><div class="lookbook-item"></div><div class="lookbook-item"></div>
+</div>
+
+</body>
+</html>
