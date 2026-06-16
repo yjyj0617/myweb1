@@ -1,0 +1,297 @@
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:"Times New Roman", serif;
+color:#111;
+background:white;
+}
+
+/* HEADER */
+
+header{
+position:sticky;
+top:0;
+background:white;
+border-bottom:1px solid #ddd;
+z-index:1000;
+}
+
+nav{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:20px 5%;
+}
+
+nav ul{
+display:flex;
+list-style:none;
+gap:40px;
+}
+
+nav a{
+text-decoration:none;
+color:black;
+}
+
+nav button{
+padding:10px 20px;
+background:none;
+border:1px solid black;
+cursor:pointer;
+}
+
+/* HERO */
+
+.hero{
+height:100vh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+text-align:center;
+}
+
+.hero select{
+margin-bottom:40px;
+padding:10px;
+}
+
+.hero h1{
+font-size:90px;
+letter-spacing:8px;
+margin-bottom:20px;
+}
+
+.hero p{
+line-height:1.8;
+}
+
+.contact{
+margin-top:50px;
+}
+
+/* BRAND */
+
+.brand-section{
+display:flex;
+padding:100px 10%;
+gap:50px;
+align-items:center;
+}
+
+.brand-img{
+width:50%;
+height:450px;
+background:#ddd;
+}
+
+.brand-content{
+width:50%;
+}
+
+.sales{
+display:flex;
+gap:30px;
+margin-top:40px;
+}
+
+/* PEOPLE */
+
+.people{
+padding:100px 10%;
+text-align:center;
+}
+
+.people-grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:40px;
+margin-top:50px;
+}
+
+.person-img{
+height:300px;
+background:#ddd;
+}
+
+/* SHOP */
+
+.shop{
+padding:100px 10%;
+}
+
+.carousel{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:20px;
+margin:40px 0;
+}
+
+.slide{
+height:200px;
+background:#ddd;
+}
+
+.search{
+width:100%;
+padding:15px;
+margin-bottom:30px;
+}
+
+.category{
+display:flex;
+justify-content:center;
+gap:20px;
+margin-bottom:50px;
+}
+
+.category button{
+padding:10px 25px;
+cursor:pointer;
+}
+
+.products{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:30px;
+}
+
+.product{
+position:relative;
+cursor:pointer;
+}
+
+.front{
+height:300px;
+background:#d9d9d9;
+transition:.4s;
+}
+
+.back{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:300px;
+background:#999;
+opacity:0;
+transition:.4s;
+}
+
+.product:hover .back{
+opacity:1;
+}
+
+.product:hover .front{
+opacity:0;
+}
+
+.product h3{
+margin-top:15px;
+}
+
+/* DETAIL */
+
+.detail{
+display:flex;
+padding:100px 10%;
+gap:50px;
+}
+
+.detail-image{
+width:50%;
+height:600px;
+background:#ddd;
+}
+
+.detail-info{
+width:50%;
+}
+
+.detail-info h2{
+margin:20px 0;
+}
+
+.detail-info select{
+width:100%;
+padding:15px;
+margin:20px 0;
+}
+
+.detail-btns{
+display:flex;
+gap:20px;
+}
+
+.detail-btns button{
+padding:12px 25px;
+}
+
+/* LOOKBOOK */
+
+.lookbook{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+}
+
+.lookbook div{
+height:100vh;
+background:#ddd;
+border:1px solid white;
+}
+
+/* CART */
+
+.cart{
+padding:100px 10%;
+}
+
+.cart-item{
+display:flex;
+gap:30px;
+margin:40px 0;
+}
+
+.cart-img{
+width:200px;
+height:200px;
+background:#ddd;
+}
+
+/* LOGIN */
+
+.login{
+padding:100px 10%;
+max-width:500px;
+margin:auto;
+}
+
+.login h2{
+text-align:center;
+margin-bottom:30px;
+}
+
+.login input{
+width:100%;
+padding:15px;
+margin-bottom:20px;
+}
+
+.login button{
+width:100%;
+padding:15px;
+}
+
+/* FOOTER */
+
+footer{
+padding:40px;
+text-align:center;
+border-top:1px solid #ddd;
+margin-top:100px;
+}
