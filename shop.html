@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUPER SOCIAL - SHOP</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Times New Roman", Times, serif; color: #111; padding-top: 65px; }
+        a { text-decoration: none; color: inherit; }
+        button { background: none; border: none; font-family: inherit; cursor: pointer; }
+
+        header { position: fixed; top: 0; left: 0; width: 100%; background: #fff; border-bottom: 1px solid #000; z-index: 2000; }
+        nav { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; height: 65px; }
+        .nav-left { display: flex; gap: 40px; align-items: center; }
+        .nav-link { font-size: 15px; text-transform: lowercase; cursor: pointer; }
+        
+        .logo-center { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 20px; font-weight: bold; letter-spacing: 4px; cursor: pointer; white-space: nowrap; }
+        .nav-right { display: flex; align-items: center; }
+        .btn-mypage { font-size: 13px; border: 1px solid #000; padding: 8px 20px; background-color: #fff; }
+
+        
+        .dropdown-wrapper { position: relative; display: inline-block; }
+        .dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background-color: #fff; border: 1px solid #000; padding: 8px 0; min-width: 90px; box-shadow: 0px 4px 10px rgba(0,0,0,0.05); z-index: 2500; }
+        .dropdown-menu a { display: block; padding: 6px 15px; font-size: 13px; text-align: left; text-transform: uppercase; cursor: pointer; }
+        .dropdown-menu a:hover { background-color: #f5f5f5; }
+        .dropdown-wrapper:hover .dropdown-menu { display: block; }
+
+        .independent-section { padding: 80px 10%; }
+        .shop-container h3 { font-size: 22px; margin-bottom: 30px; font-weight: normal; }
+
+        
+        .carousel-outer-container { position: relative; display: flex; align-items: center; width: 100%; margin-bottom: 20px; }
+        .auto-carousel-wrapper { position: relative; overflow: hidden; flex-grow: 1; width: 100%; }
+        .auto-carousel-track { display: flex; width: 100%; }
+        
+        
+        .carousel-slide { min-width: 25%; max-width: 25%; padding-right: 20px; cursor: pointer; flex-shrink: 0; display: flex; flex-direction: column; }
+        .carousel-slide-img { width: 100%; padding-top: 100%; border: 1px solid #000; background-color: #fafafa; background-size: cover; background-position: center; position: relative; }
+        .carousel-slide-meta { margin-top: 10px; }
+        .carousel-slide-meta h4 { font-size: 15px; font-weight: normal; margin-bottom: 5px; }
+        
+        .carousel-side-btn { border: 1px solid #000; width: 40px; height: 40px; font-size: 18px; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 50%; z-index: 10; flex-shrink: 0; }
+        
+        .carousel-dots { display: flex; gap: 6px; justify-content: center; margin-top: 15px; margin-bottom: 40px; }
+        .carousel-dot { width: 7px; height: 7px; border-radius: 50%; background: #ccc; cursor: pointer; }
+        .carousel-dot.active { background: #111; }
+
+        .search-container { margin-bottom: 30px; }
+        .search-input { width: 100%; padding: 15px; border: 1px solid #000; font-size: 15px; outline: none; }
+        .category-tabs { display: flex; justify-content: center; gap: 20px; margin-bottom: 50px; flex-wrap: wrap; }
+        .tab-btn { padding: 10px 25px; border: 1px solid #ccc; font-size: 14px; background: #fff; }
+        .tab-btn.active { background: #000; color: #fff; border-color: #000; }
+
+        .products-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; }
+        .product-card { width: 100%; cursor: pointer; position: relative; }
+        .product-img-wrapper { position: relative; width: 100%; padding-top: 120%; border: 1px solid #000; background:#fcfcfc; }
+        .product-meta { margin-top: 15px; }
+        .product-wishlist-btn { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,.9); border: 1px solid #ccc; padding: 5px 8px; cursor: pointer; z-index: 10; }
+        .product-wishlist-btn.active { color: #e00; border-color: #e00; }
+
+        .pagination { display: flex; justify-content: center; gap: 15px; margin-top: 50px; }
+        .page-num { cursor: pointer; color: #888; }
+        .page-num.active { color: #000; font-weight: bold; border-bottom: 1px solid #000; }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="nav-left">
+            <a href="shop.html" class="nav-link" style="font-weight:bold;">shop</a>
+            <div class="dropdown-wrapper">
+                <span class="nav-link" id="navLangLabel">kr</span>
+                <div class="dropdown-menu">
+                    <a onclick="setCurrency('KRW')">KR</a>
+                    <a onclick="setCurrency('USD')">INTL</a>
+                </div>
+            </div>
+            <div class="dropdown-wrapper">
+                <a href="lookbook.html" class="nav-link">lookbook</a>
+                <div class="dropdown-menu">
+                    <a href="lookbook.html">25 SS</a>
+                    <a href="lookbook.html">24 FW</a>
+                </div>
+            </div>
+        </div>
+        <div class="logo-center" onclick="location.href='index.html'">SUPER SOCIAL</div>
+        <div class="nav-right" id="navAuthWrapper"></div>
+    </nav>
+</header>
+
+<section class="independent-section">
+    <div class="shop-container">
+        <h3>신상품</h3>
+        <div class="carousel-outer-container" onmouseenter="pauseCarousel()" onmouseleave="resumeCarousel()">
+            <button class="carousel-side-btn prev" onclick="manualCarousel(-1)">&lt;</button>
+            <div class="auto-carousel-wrapper" id="autoCarouselWrapper">
+                <div class="auto-carousel-track" id="autoCarouselTrack"></div>
+            </div>
+            <button class="carousel-side-btn next" onclick="manualCarousel(1)">&gt;</button>
+        </div>
+        <div class="carousel-dots" id="carouselDots"></div>
+
+        <div class="search-container">
+            <input type="text" placeholder="Search" class="search-input" id="searchInput" oninput="filterProducts()">
+        </div>
+
+        <div class="category-tabs">
+            <button class="tab-btn active" onclick="filterCategory(this,'전체')">전체</button>
+            <button class="tab-btn" onclick="filterCategory(this,'상의')">상의</button>
+            <button class="tab-btn" onclick="filterCategory(this,'하의')">하의</button>
+            <button class="tab-btn" onclick="filterCategory(this,'아우터')">아우터</button>
+            <button class="tab-btn" onclick="filterCategory(this,'신발')">신발</button>
+            <button class="tab-btn" onclick="filterCategory(this,'악세서리')">악세서리</button>
+        </div>
+
+        <div class="products-grid" id="productsGrid"></div>
+        <div class="pagination" id="paginationBar"></div>
+    </div>
+</section>
+
+<script>
+    let allProducts = JSON.parse(localStorage.getItem('allProducts')) || [
+        { id:1,  name:'OVERSIZED TEE',    price:59000,  category:'상의',    desc:'오버사이즈 반팔 티셔츠. 두꺼운 면 소재로 제작.' },
+        { id:2,  name:'HOODIE',           price:89000,  category:'상의',    desc:'기모 안감 후디. 포켓 내부 기모 처리.' },
+        { id:3,  name:'STRIPE TEE',       price:65000,  category:'상의',    desc:'스트라이프 패턴 반팔 티셔츠.' },
+        { id:4,  name:'LOGO LONGSLEEVE',  price:72000,  category:'상의',    desc:'로고 프린트 긴팔 티셔츠.' },
+        { id:5,  name:'WIDE DENIM',       price:109000, category:'하의',    desc:'와이드 핏 데님 팬츠. 고탄력 원단.' },
+        { id:6,  name:'CARGO PANTS',      price:99000,  category:'하의',    desc:'카고 포켓 팬츠. 유틸리티 디자인.' },
+        { id:7,  name:'JOGGER PANTS',     price:85000,  category:'하의',    desc:'조거 팬츠. 밴딩 허리 편안한 핏.' },
+        { id:8,  name:'SHORTS',           price:69000,  category:'하의',    desc:'반바지. 여름용 경량 소재.' },
+        { id:9,  name:'OVERSIZED JACKET', price:149000, category:'아우터',  desc:'오버사이즈 자켓. 스냅 버튼 클로저.' },
+        { id:10, name:'BOMBER JACKET',    price:179000, category:'아우터',  desc:'봄버 자켓. 리브 트리밍 처리.' },
+        { id:11, name:'COACH JACKET',     price:139000, category:'아우터',  desc:'코치 자켓 나일론 소재.' },
+        { id:12, name:'CHUNKY SNEAKERS',  price:129000, category:'신발',    desc:'청키 솔 스니커즈. 가죽 어퍼.' },
+        { id:13, name:'HIGH TOP',         price:145000, category:'신발',    desc:'하이탑 스니커즈.' },
+        { id:14, name:'LOGO CAP',         price:45000,  category:'악세서리', desc:'브랜드 로고 캡. 6패널 구조.' },
+        { id:15, name:'SNAP BACK',        price:38000,  category:'악세서리', desc:'스냅백 캡.' },
+        { id:16, name:'BEANIE',           price:32000,  category:'악세서리', desc:'와플 비니.' }
+    ];
+
+    
+    const newArrivals = [
+        { id:101, name:'25SS HOODIE',       price:99000,  category:'상의', desc:'25SS 시즌 후디.' },
+        { id:102, name:'NEW ARRIVALS TEE',  price:39000,  category:'상의', desc:'신상품 반팔 티셔츠. 100% 면 소재.' },
+        { id:103, name:'WIDE PANTS',        price:89000,  category:'하의', desc:'와이드 핏 팬츠. 폴리 혼방.' },
+        { id:104, name:'LOGO CAP',          price:45000,  category:'악세서리', desc:'브랜드 로고 캡 모자.' },
+        { id:105, name:'SNAP BACK',         price:35000,  category:'악세서리', desc:'스냅백 캡.' },
+        { id:106, name:'CARGO SHORTS',      price:79000,  category:'하의', desc:'카고 쇼츠.' },
+        { id:107, name:'COACH JACKET',      price:139000, category:'아우터', desc:'코치 자켓 신상.' },
+        { id:108, name:'HIGH TOP',          price:145000, category:'신발', desc:'하이탑 신상.' }
+    ];
+
+    let currentShopCategory = '전체';
+    let currentPage = 1;
+    const PAGE_SIZE = 8;
+    
+    
+    const CLONE_COUNT = 4;
+    let carouselIndex = CLONE_COUNT; 
+    let isTransitioning = false;
+    let carouselTimer = null;
+    let currentCurrency = localStorage.getItem('currency') || 'KRW';
+
+    function showToast(msg) {}
+
+    function formatPrice(price) {
+        return currentCurrency === 'USD' ? `$${Math.round(price/1000)}` : `${price.toLocaleString()}원`;
+    }
+
+    function setCurrency(type) {
+        localStorage.setItem('currency', type);
+        currentCurrency = type;
+        document.getElementById('navLangLabel').textContent = type === 'KRW' ? 'kr' : 'intl';
+        buildCarousel();
+        renderProducts();
+    }
+
+    
+    function buildCarousel() {
+        const track = document.getElementById('autoCarouselTrack');
+        const dots = document.getElementById('carouselDots');
+        
+        
+        const headClones = newArrivals.slice(-CLONE_COUNT);
+        const tailClones = newArrivals.slice(0, CLONE_COUNT);
+        const loopItems = [...headClones, ...newArrivals, ...tailClones];
+
+        track.innerHTML = loopItems.map(item => `
+            <div class="carousel-slide" onclick="openDetail(${JSON.stringify(item).replace(/"/g, '&quot;')}, true)">
+                <div class="carousel-slide-img"></div>
+                <div class="carousel-slide-meta">
+                    <h4>${item.name}</h4>
+                    <p>${formatPrice(item.price)}</p>
+                </div>
+            </div>
+        `).join('');
+        
+        
+        dots.innerHTML = newArrivals.map((_, i) => `<span class="carousel-dot ${i===(carouselIndex-CLONE_COUNT)?'active':''}" onclick="goCarousel(${i+CLONE_COUNT})"></span>`).join('');
+        
+        
+        track.style.transition = 'none';
+        track.style.transform = `translateX(-${carouselIndex * 25}%)`;
+    }
+
+    function goCarousel(idx) { 
+        if (isTransitioning) return;
+        carouselIndex = idx; 
+        updateCarouselPosition(true); 
+    }
+
+    function updateCarouselPosition(useAnimation = true) {
+        const track = document.getElementById('autoCarouselTrack');
+        if(!track) return;
+        
+        if (useAnimation) {
+            isTransitioning = true;
+            track.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)';
+        } else {
+            track.style.transition = 'none';
+        }
+        
+        track.style.transform = `translateX(-${carouselIndex * 25}%)`;
+        
+        
+        let dotIdx = carouselIndex - CLONE_COUNT;
+        if (dotIdx < 0) dotIdx = newArrivals.length + dotIdx;
+        if (dotIdx >= newArrivals.length) dotIdx = dotIdx - newArrivals.length;
+        
+        document.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === dotIdx));
+    }
+
+    
+    setTimeout(() => {
+        const track = document.getElementById('autoCarouselTrack');
+        if(track) {
+            track.addEventListener('transitionend', () => {
+                isTransitioning = false;
+                
+                
+                if (carouselIndex >= newArrivals.length + CLONE_COUNT) {
+                    carouselIndex = CLONE_COUNT;
+                    updateCarouselPosition(false);
+                }
+                
+                if (carouselIndex < CLONE_COUNT) {
+                    carouselIndex = newArrivals.length + carouselIndex;
+                    updateCarouselPosition(false);
+                }
+            });
+        }
+    }, 100);
+
+    function pauseCarousel() { clearInterval(carouselTimer); }
+    function resumeCarousel() { 
+        carouselTimer = setInterval(() => { 
+            if (!isTransitioning) {
+                carouselIndex++;
+                updateCarouselPosition(true);
+            }
+        }, 3000); 
+    }
+
+    function manualCarousel(dir) { 
+        if (isTransitioning) return;
+        carouselIndex += dir;
+        updateCarouselPosition(true); 
+    }
+
+    function getFilteredProducts() {
+        const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
+        return allProducts.filter(p => (currentShopCategory === '전체' || p.category === currentShopCategory) && p.name.toLowerCase().includes(q));
+    }
+
+    function renderProducts() {
+        const grid = document.getElementById('productsGrid');
+        const pbar = document.getElementById('paginationBar');
+        const filtered = getFilteredProducts();
+        const totalPages = Math.ceil(filtered.length / PAGE_SIZE) || 1;
+
+        const start = (currentPage - 1) * PAGE_SIZE;
+        const pageItems = filtered.slice(start, start + PAGE_SIZE);
+
+        grid.innerHTML = pageItems.map(p => `
+            <div class="product-card" onclick="openDetail(${JSON.stringify(p).replace(/"/g, '&quot;')}, false)">
+                <div class="product-img-wrapper">
+                    <button class="product-wishlist-btn ${p.wished?'active':''}" onclick="event.stopPropagation(); toggleWish(${p.id})">${p.wished?'♥':'♡'}</button>
+                </div>
+                <div class="product-meta"><h4>${p.name}</h4><p>${formatPrice(p.price)}</p></div>
+            </div>
+        `).join('');
+
+        pbar.innerHTML = `<button onclick="goPage(${Math.max(1, currentPage-1)})">&#60;</button>` +
+            Array.from({length: totalPages}, (_, i) => `<span class="page-num ${i+1===currentPage?'active':''}" onclick="goPage(${i+1})">${i+1}</span>`).join('') +
+            `<button onclick="goPage(${Math.min(totalPages, currentPage+1)})">&#62;</button>`;
+    }
+
+    function filterCategory(btn, cat) {
+        currentShopCategory = cat; currentPage = 1;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active'); renderProducts();
+    }
+    function filterProducts() { currentPage = 1; renderProducts(); }
+    function goPage(n) { currentPage = n; renderProducts(); }
+
+    function toggleWish(id) {
+        const p = allProducts.find(x => x.id === id);
+        p.wished = !p.wished;
+        localStorage.setItem('allProducts', JSON.stringify(allProducts));
+        renderProducts();
+    }
+
+    function openDetail(obj, isNew) {
+        localStorage.setItem('selectedProduct', JSON.stringify(obj));
+        location.href = 'detail.html';
+    }
+
+    window.onload = function() {
+        const user = localStorage.getItem('user');
+        if(user) {
+            document.getElementById('navAuthWrapper').innerHTML = `<button class="btn-mypage" onclick="location.href='mypage.html'">마이페이지</button>`;
+        } else {
+            document.getElementById('navAuthWrapper').innerHTML = `<button class="btn-mypage" onclick="location.href='login.html'">로그인</button>`;
+        }
+        document.getElementById('navLangLabel').textContent = currentCurrency === 'KRW' ? 'kr' : 'intl';
+        buildCarousel(); resumeCarousel(); renderProducts();
+    }
+</script>
+</body>
+</html>
