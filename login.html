@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUPER SOCIAL - AUTH</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Times New Roman", Times, serif; color: #111; padding-top: 65px; }
+        header { position: fixed; top: 0; left: 0; width: 100%; background: #fff; border-bottom: 1px solid #000; z-index: 2000; }
+        nav { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; height: 65px; }
+        .logo-center { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 20px; font-weight: bold; letter-spacing: 4px; cursor: pointer; }
+        .login-card { max-width: 400px; margin: 60px auto; padding:20px;}
+        .login-tab-bar { display: flex; margin-bottom: 30px; border-bottom: 2px solid #000; }
+        .login-tab { flex: 1; padding: 12px; text-align: center; cursor: pointer; color:#888; background:none; border:none; font-size:15px; }
+        .login-tab.active { color: #000; font-weight: bold; }
+        .login-form-section { display: none; }
+        .login-form-section.active { display: block; }
+        input { width: 100%; padding: 15px; margin-bottom: 20px; border: 1px solid #000; outline: none; }
+        .btn-submit { width: 100%; padding: 15px; background: #000; color: #fff; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="nav-left"><a href="index.html">홈으로</a></div>
+        <div class="logo-center" onclick="location.href='index.html'">SUPER SOCIAL</div>
+        <div class="nav-right"></div>
+    </nav>
+</header>
+
+<div class="login-card">
+    <div class="login-tab-bar">
+        <button class="login-tab active" id="tabL" onclick="switchTab('L')">로그인</button>
+        <button class="login-tab" id="tabS" onclick="switchTab('S')">회원가입</button>
+    </div>
+    <div class="login-form-section active" id="sectionL">
+        <input type="email" placeholder="이메일" id="loginEmail">
+        <input type="password" placeholder="비밀번호" id="loginPw">
+        <button class="btn-submit" onclick="submitAuth('L')">LOGIN</button>
+    </div>
+    <div class="login-form-section" id="sectionS">
+        <input type="text" placeholder="이름" id="signupName">
+        <input type="email" placeholder="이메일" id="signupEmail">
+        <input type="password" placeholder="비밀번호" id="signupPw">
+        <button class="btn-submit" onclick="submitAuth('S')">SIGN UP</button>
+    </div>
+</div>
+
+<script>
+    function switchTab(t) {
+        document.getElementById('tabL').classList.toggle('active', t==='L');
+        document.getElementById('tabS').classList.toggle('active', t==='S');
+        document.getElementById('sectionL').classList.toggle('active', t==='L');
+        document.getElementById('sectionS').classList.toggle('active', t==='S');
+    }
+    function submitAuth(t) {
+        const idVal = t === 'L' ? document.getElementById('loginEmail').value : document.getElementById('signupName').value;
+        if(!idVal) return;
+        localStorage.setItem('user', idVal.split('@')[0]);
+        alert('환영합니다!'); location.href = 'mypage.html';
+    }
+</script>
+</body>
+</html>
