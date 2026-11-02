@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUPER SOCIAL</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html, body { 
+            width: 100%;
+            height: 100%;
+            overflow: hidden; 
+            background-color: #111;
+        }
+        
+        body { 
+            font-family: "Times New Roman", Times, serif; 
+            color: #111; 
+            line-height: 1.4;
+        }
+        a { text-decoration: none; color: inherit; }
+        button { background: none; border: none; font-family: inherit; cursor: pointer; }
+
+        
+        .wireframe-image-placeholder, .person-img-placeholder {
+            background-color: #222; border: 1px solid rgba(255, 255, 255, 0.3); position: relative;
+        }
+        .wireframe-image-placeholder::before, .person-img-placeholder::before {
+            content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to top right, transparent calc(50% - 1px), rgba(238,238,238,0.1) calc(50% - 1px), rgba(238,238,238,0.1) calc(50% + 1px), transparent calc(50% + 1px)),
+                        linear-gradient(to top left,  transparent calc(50% - 1px), rgba(238,238,238,0.1) calc(50% - 1px), rgba(238,238,238,0.1) calc(50% + 1px), transparent calc(50% + 1px));
+        }
+
+        
+        header { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            background: #fff; 
+            z-index: 2000; 
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08), 
+                        0 1px 4px rgba(0, 0, 0, 0.04); 
+        }
+        nav { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; height: 65px; }
+        .nav-left { display: flex; gap: 40px; align-items: center; }
+        .nav-link { font-size: 15px; text-transform: lowercase; cursor: pointer; }
+
+        .logo-center { 
+            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+            font-size: 20px; font-weight: bold; letter-spacing: 4px; cursor: pointer; white-space: nowrap;
+        }
+        .nav-right { display: flex; align-items: center; }
+        .btn-mypage { font-size: 13px; border: 1px solid #000; padding: 8px 20px; background-color: #fff; }
+
+        .dropdown-wrapper { position: relative; display: inline-block; }
+        .dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background-color: #fff; border: 1px solid #000; padding: 8px 0; min-width: 90px; box-shadow: 0px 4px 10px rgba(0,0,0,0.05); z-index: 2500; }
+        .dropdown-menu a { display: block; padding: 6px 15px; font-size: 13px; text-align: left; text-transform: uppercase; cursor: pointer; }
+        .dropdown-menu a:hover { background-color: #f5f5f5; }
+        .dropdown-wrapper:hover .dropdown-menu { display: block; }
+
+        
+        #scrollContainer {
+            width: 100%;
+            height: 100%;
+            will-change: transform;
+            transition: transform 0.75s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .scroll-section { 
+            height: 100vh;
+            width: 100%;
+            display: flex; 
+            flex-direction: column; 
+            padding: 90px 10% 40px 10%;
+            background-color: #111111;
+            color: #fff;
+        }
+        
+        
+        .hero { 
+            justify-content: center; align-items: center; text-align: center; position: relative; 
+            background: linear-gradient(to bottom, #ffffff 30%, #111111 100%);
+        }
+        
+        @keyframes logoFadeInDown {
+            from { opacity: 0; transform: translate3d(0, -30px, 0); }
+            to { opacity: 1; transform: translate3d(0, 0, 0); }
+        }
+
+        .brand-logo-large { 
+            max-width: 620px; 
+            width: 100%; 
+            height: auto; 
+            margin-top: -140px; 
+            margin-bottom: 25px; 
+            animation: logoFadeInDown 1.2s ease-out both; 
+        }
+        
+        .brand-slogan { font-size: 16px; line-height: 1.8; color: #eee; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .hero-footer-info { margin-top: 50px; font-size: 14px; color: #ccc; display: flex; flex-direction: column; gap: 5px; }
+        
+        .store-list-container { max-height: 0; opacity: 0; overflow: hidden; transition: max-height 0.5s ease-out, opacity 0.4s ease-out, margin-top 0.4s ease-out; margin-top: 0; }
+        .store-list-container.show { max-height: 100px; opacity: 1; margin-top: 15px; }
+        .store-grid-mini { display: flex; justify-content: center; gap: 25px; font-size: 13px; color: #fff; letter-spacing: 1px; }
+        .store-item {
+            border: 1px solid #444;
+            padding: 6px 16px;
+            background: #222;
+            cursor: pointer;
+            white-space: nowrap;
+            min-width: 90px;
+            text-align: center;
+        }
+        .store-item:hover { min-width: 260px; font-size: 0; }
+        .store-item:hover::after { content: attr(data-address); font-size: 13px; letter-spacing: 0; }
+
+        
+        .brand-section { justify-content: center; padding-top: 110px; }
+        .brand-grid { display: flex; gap: 50px; width: 100%; align-items: center; }
+        .brand-img-box { width: 50%; }
+        .brand-content { width: 50%; }
+        .brand-content h2 { font-size: 24px; margin-bottom: 20px; font-weight: normal; color: #fff; }
+        .brand-story-inline .founding-year { font-size: 11px; color: #aaa; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+        .brand-story-inline p { font-size: 14px; color: #fff; line-height: 1.85; margin-bottom: 12px; }
+
+        
+        .sales-grid { display: flex; gap: 15px; margin-top: 20px; margin-bottom: 30px; flex-wrap: wrap; }
+        .sales-grid div { padding: 12px; flex: 1; min-width: 100px; text-align: center; background: rgba(255,255,255,0.05); color: #fff; }
+        .sales-grid span { display: block; font-size: 11px; color: #aaa; margin-bottom: 5px; }
+        .sales-grid strong { font-size: 15px; color: #fff; }
+
+        
+        .collaboration-info h3 { font-size: 15px; margin-bottom: 12px; font-weight: normal; color: #fff; border-left: 2px solid #fff; padding-left: 8px; }
+        .graph-row { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; }
+        .graph-label { width: 80px; font-size: 13px; }
+        .graph-value { width: 50px; font-size: 13px; font-weight: bold; }
+        .graph-bar { flex-grow: 1; height: 6px; background-color: rgba(255,255,255,0.2); }
+        .bar-fill { height: 100%; background-color: #fff; }
+
+        
+        .collection-section h2 { font-size: 24px; font-weight: normal; margin-bottom: 5px; text-transform: uppercase; }
+        .collection-section > p { font-size: 13px; color: #888; margin-bottom: 25px; letter-spacing: 1px; }
+        
+        .product-matrix { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; flex: 1; }
+        
+        .product-card { 
+            border: 1px solid rgba(255,255,255,0.15); 
+            display: flex; 
+            flex-direction: column; 
+            background: #161616; 
+            overflow: hidden; 
+            position: relative; 
+            height: 440px; 
+        }
+        
+        .product-img-box { width: 100%; height: 250px; overflow: hidden; }
+        .product-img-box .wireframe-image-placeholder { width: 100%; height: 100%; border: none; }
+        .product-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
+        .product-badge { position: absolute; top: 15px; left: 15px; background: #fff; color: #111; font-size: 10px; padding: 3px 8px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; z-index: 2; }
+        .product-badge.limited { background: #000000; color: #fff; }
+        
+        
+        .product-detail { 
+            padding: 15px; 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .product-info-top h4 { font-size: 15px; font-weight: bold; margin-bottom: 6px; color: #fff; }
+        .product-info-top p { font-size: 12px; color: #aaa; line-height: 1.5; }
+        
+        
+        .product-price { 
+            font-size: 14px; 
+            margin-top: auto; 
+            font-family: Arial, sans-serif; 
+            font-weight: bold; 
+            color: #fff; 
+        }
+
+        
+        .history-section h2 { font-size: 24px; font-weight: normal; margin-bottom: 25px; }
+        .history-grid { display: flex; gap: 40px; flex: 1; }
+        .history-left { width: 50%; display: flex; flex-direction: column; gap: 20px; }
+        .history-right { width: 50%; display: flex; flex-direction: column; gap: 20px; border-left: 1px solid rgba(255,255,255,0.15); padding-left: 40px; }
+        
+        
+        .timeline-item { position: relative; padding-left: 20px; border-left: 2px solid #fff; margin-bottom: 5px; }
+        .timeline-year { font-size: 15px; font-weight: bold; color: #fff; margin-bottom: 4px; font-family: Arial, sans-serif; }
+        .timeline-desc { font-size: 13px; color: #ccc; line-height: 1.6; }
+        .award-badge-box { display: flex; gap: 15px; margin-top: 10px; }
+        .award-card { padding: 12px 18px; background: rgba(255,255,255,0.05); flex: 1; text-align: center; }
+        .award-card span { display: block; font-size: 11px; color: #aaa; margin-bottom: 3px; }
+        .award-card strong { font-size: 13px; color: #fff; font-weight: normal; }
+
+        
+        .partner-matrix { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .partner-card { background: #161616; border: 1px solid rgba(255,255,255,0.1); padding: 15px; display: flex; align-items: center; gap: 15px; }
+        .partner-avatar { width: 50px; height: 50px; border-radius: 50%; flex-shrink: 0; overflow: hidden; position: relative; background: #222; }
+        
+        
+        .avatar-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        .partner-info h5 { font-size: 14px; font-weight: bold; color: #fff; margin-bottom: 4px; }
+        .partner-info p { font-size: 12px; color: #9977ff; font-weight: bold; font-family: sans-serif; margin-bottom: 2px; }
+        .partner-info span { font-size: 11px; color: #aaa; display: block; line-height: 1.4; }
+
+        
+        .people-section { justify-content: space-between; padding-top: 100px; }
+        .people-section h2 { font-size: 24px; font-weight: normal; margin-bottom: 25px; color: #fff; text-align: left; }
+        .people-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin-bottom: 30px; }
+        
+        .person-img { 
+            width: 100%;
+            height: 290px; 
+            object-fit: cover;
+            object-position: top center;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .person-card { display: flex; flex-direction: column; }
+        .person-info { display: flex; justify-content: space-between; font-size: 15px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 8px; margin-bottom: 12px; }
+        .person-info span:first-child { font-weight: bold; color: #fff; }
+        .person-info span:last-child { color: #aaa; }
+        .person-bio { font-size: 14px; color: #ccc; line-height: 1.7; margin-bottom: 10px; }
+
+        
+        footer { 
+            background: #111; 
+            padding: 25px 0 0 0; 
+            text-align: left; 
+            border-top: 1px solid #222; 
+            font-size: 12px; 
+            color: #777; 
+            line-height: 1.8;
+            width: 100%;
+        }
+        .footer-container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
+        .footer-left, .footer-right { flex: 1; min-width: 250px; }
+        .footer-right { text-align: right; }
+        .footer-title { color: #fff; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; font-weight: bold; }
+        .footer-links { margin-bottom: 10px; }
+        .footer-links a { color: #ccc; text-decoration: none; margin-right: 20px; transition: color 0.2s; }
+        .footer-links a:hover { color: #fff; }
+        .footer-copyright { margin-top: 15px; font-size: 11px; color: #444; border-top: 1px solid #222; padding-top: 15px; text-align: center; }
+
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #fff; color: #111; padding: 12px 28px; font-size: 14px; opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 9999; white-space: nowrap; box-shadow: 0px 5px 15px rgba(0,0,0,0.3); }
+        .toast.show { opacity: 1; }
+
+        
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease-out, transform 0.8s cubic-bezier(0.215, 0.610, 0.355, 1);
+        }
+        .scroll-animate.animated-active { opacity: 1; transform: translateY(0); }
+        .delay-100 { transition-delay: 0.1s; }
+        .delay-200 { transition-delay: 0.2s; }
+        .delay-250 { transition-delay: 0.25s; }
+        .delay-350 { transition-delay: 0.35s; }
+
+        .brand-story-img {
+            width: 100%;
+            height: 450px;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+            border: 1px solid #fff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<header>
+    <nav>
+        <div class="nav-left">
+            <a href="shop.html" class="nav-link">shop</a>
+            <div class="dropdown-wrapper">
+                <span class="nav-link" id="navLangLabel">kr</span>
+                <div class="dropdown-menu">
+                    <a onclick="setCurrency('KRW')">KR</a>
+                    <a onclick="setCurrency('USD')">INTL</a>
+                </div>
+            </div>
+            <div class="dropdown-wrapper">
+                <a href="lookbook.html" class="nav-link">lookbook</a>
+                <div class="dropdown-menu">
+                    <a href="lookbook.html">25 SS</a>
+                    <a href="lookbook.html">24 FW</a>
+                </div>
+            </div>
+        </div>
+        <div class="logo-center" onclick="location.href='index.html'">SUPER SOCIAL</div>
+        <div class="nav-right" id="navAuthWrapper"></div>
+    </nav>
+</header>
+
+<div id="scrollContainer">
+    <main style="padding-top: 65px;">
+        <section class="scroll-section hero">
+            <div class="hero-main">
+                <img src="rogo.png" alt="SUPER SOCIAL" class="brand-logo-large">
+                <p class="brand-slogan">독창성. 강렬함. 개성. 아우라.<br>스트릿 문화를 입다.</p>
+            </div>
+            <div class="hero-footer-info">
+                <p> cs@supersocial.com</p>
+                <p style="cursor:pointer; text-decoration:underline;" onclick="toggleStores()">전국 판매처 보기</p>
+                <div class="store-list-container" id="storeListContainer">
+                    <div class="store-grid-mini">
+                        <span class="store-item" data-name="서울홍대점" data-address="서울특별시 마포구 홍대로 1길 12">서울홍대점</span>
+                        <span class="store-item" data-name="일본점" data-address="東京都 渋谷区 神남 1-2-3">일본점</span>
+                        <span class="store-item" data-name="중국점" data-address="上海市 黄浦区 南京东路 88号">중국점</span>
+                        <span class="store-item" data-name="미국점" data-address="123 Melrose Ave, Los Angeles, CA">미국점</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="scroll-section brand-section">
+            <div class="brand-grid">
+                <div class="brand-img-box scroll-animate">
+                    <img src="mainIMG/brandSTORY.jpg" alt="Brand Story" class="brand-story-img">
+                </div>
+                <div class="brand-content scroll-animate delay-200">
+                    <h2>Brand Story</h2>
+                    <div class="brand-story-inline">
+                        <p class="founding-year">FOUNDED 2018 · SEOUL, KOREA</p>
+                        <p>SUPER SOCIAL은 2018년, 홍익대학교 앞 작은 매장에서 시작되었습니다. 창업자 김민준은 힙합과 스트릿 문화에서 영감을 받아 브랜드를 설립했습니다.</p>
+                        <p>첫 시즌 컬렉션 완판을 시작으로 2020년 LA와 도쿄에 팝업스토어를 연며 글로벌 시장에 진출했습니다.</p>
+                    </div>
+                    <div class="sales-grid">
+                        <div><span>🇰🇷 한국</span><strong>50,000</strong></div>
+                        <div><span>🇺🇸 미국</span><strong>30,000</strong></div>
+                        <div><span>🇨🇳 중국</span><strong>20,000</strong></div>
+                        <div><span>🇯🇵 일본</span><strong>15,000</strong></div>
+                    </div>
+                    <div class="collaboration-info">
+                        <h3>협업 브랜드 분포</h3>
+                        <div class="graph-row"><span class="graph-label">스포츠</span><span class="graph-value">60%</span><div class="graph-bar"><div class="bar-fill" style="width:60%"></div></div></div>
+                        <div class="graph-row"><span class="graph-label">서브컬처</span><span class="graph-value">90%</span><div class="graph-bar"><div class="bar-fill" style="width:90%"></div></div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="scroll-section collection-section" style="position: relative; overflow: hidden;">
+            <img src="다운로드.png" alt="" style="
+                position: absolute;
+                left: -60px;
+                top: 50%;
+                transform: translateY(-50%);
+                height: 85%;
+                width: auto;
+                opacity: 0.18;
+                pointer-events: none;
+                user-select: none;
+                filter: brightness(1.2);
+                z-index: 0;
+            ">
+
+            <img src="다운로드1.png" alt="" style="
+                position: absolute;
+                right: -40px;
+                top: 50%;
+                transform: translateY(-50%);
+                height: 80%;
+                width: auto;
+                opacity: 0.15;
+                pointer-events: none;
+                user-select: none;
+                filter: brightness(1.1) saturate(0.6);
+                z-index: 0;
+            ">
+
+            <h2 class="scroll-animate" style="position:relative; z-index:1;">Curated Collections</h2>
+            <p class="scroll-animate delay-100" style="position:relative; z-index:1;">BEST SELLERS, COLLABORATIONS AND HISTORICAL ARCHIVES</p>
+            
+            <div class="product-matrix" style="position:relative; z-index:1;">
+                <div class="product-card scroll-animate delay-100">
+                    <span class="product-badge">Best</span>
+                    <div class="product-img-box">
+                        <img src="mainIMG/collection01.jpg" alt="Oversized Heavy Hoodie" class="product-img">
+                    </div>
+                    <div class="product-detail">
+                        <div class="product-info-top">
+                            <h4>Oversized Heavy Hoodie</h4>
+                            <p>시그니처 드롭 숄더 핏과 고중량 테리 원단으로 완성한 스테디셀러 후디.</p>
+                        </div>
+                        <div class="product-price">₩129,000</div>
+                    </div>
+                </div>
+
+                <div class="product-card scroll-animate delay-200">
+                    <span class="product-badge" style="background:#000000; color:#fff;">Collab</span>
+                    <div class="product-img-box">
+                        <img src="mainIMG/collection02.jpg" alt="SS × PUMA Suede Classic" class="product-img">
+                    </div>
+                    <div class="product-detail">
+                        <div class="product-info-top">
+                            <h4>SS × PUMA Suede Classic</h4>
+                            <p>푸마와의 협업으로 재해석된 러프한 질감의 가죽 스니커즈 아카이브 컬렉션.</p>
+                        </div>
+                        <div class="product-price">₩169,000</div>
+                    </div>
+                </div>
+
+                <div class="product-card scroll-animate delay-250">
+                    <span class="product-badge limited">Limited (2020)</span>
+                    <div class="product-img-box">
+                        <img src="mainIMG/collection03.jpg" alt="LA Pop-up Bomber Jacket" class="product-img">
+                    </div>
+                    <div class="product-detail">
+                        <div class="product-info-top">
+                            <h4>LA Pop-up Bomber Jacket</h4>
+                            <p>글로벌 진출의 도약이 된 2020 LA 오프닝 한정판 일련번호 각인 봄버 자켓.</p>
+                        </div>
+                        <div class="product-price">₩349,000</div>
+                    </div>
+                </div>
+
+                <div class="product-card scroll-animate delay-350">
+                    <span class="product-badge limited">Archive (2018)</span>
+                    <div class="product-img-box">
+                        <img src="mainIMG/collection04.jpg" alt="001 Founding Raw Denim" class="product-img">
+                    </div>
+                    <div class="product-detail">
+                        <div class="product-info-top">
+                            <h4>001 Founding Raw Denim</h4>
+                            <p>창업 당시 홍대 매장에서 수작업 넘버링 선착순 발매했던 브랜드 역사상 첫 데님.</p>
+                        </div>
+                        <div class="product-price">₩189,000</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="scroll-section history-section">
+            <div class="history-grid">
+                <div class="history-left scroll-animate delay-100">
+                    <h2 style="border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom:15px; margin-bottom:15px;">Historical Milestones</h2>
+                    <div class="timeline-item">
+                        <div class="timeline-year">2024 · Present</div>
+                        <div class="timeline-desc">아시아 및 유럽 패션 유통망 확대 및 디지털 버추얼 쇼케이스 런칭.</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">2022</div>
+                        <div class="timeline-desc">밀라노 패션위크 넥스트 제너레이션 초청 스트릿 캐주얼 부문 주목.</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">2020</div>
+                        <div class="timeline-desc">K-스트릿 컬처 브랜드 파리, 뉴욕, 도쿄 팝업 트랙 최단기 완판 기록.</div>
+                    </div>
+                    
+                    <div class="collaboration-info" style="margin-top: 15px;">
+                        <h3>Brand Awards</h3>
+                        <div class="award-badge-box">
+                            <div class="award-card">
+                                <span>2023 K-Fashion</span>
+                                <strong>올해의 스트릿 브랜드 대상</strong>
+                            </div>
+                            <div class="award-card">
+                                <span>Design Awards</span>
+                                <strong>시각디자인 우수 텍스타일 프라이즈</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="history-right scroll-animate delay-250">
+                    <h2 style="border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom:15px; margin-bottom:15px;">Partnership Union</h2>
+                    <p style="font-size:13px; color:#aaa; margin-bottom:15px;">글로벌 아티스트, 뮤지션, 인플루언서 네트워크 커뮤니티</p>
+                    
+                    <div class="partner-matrix">
+                        <div class="partner-card">
+                            <div class="partner-avatar">
+                                <img src="images/partner-zev.jpg" alt="Zev Benjamin" class="avatar-img" onerror="this.src='images/default-avatar.jpg'">
+                            </div>
+                            <div class="partner-info">
+                                <p>@CAMPAIGN MODEL</p>
+                                <h5>Zev Benjamin</h5>
+                                <span>25 SS 시즌 메인 캠페인 페이스 및 파리 크루 비주얼 디렉션</span>
+                            </div>
+                        </div>
+                        
+                        <div class="partner-card">
+                            <div class="partner-avatar">
+                                <img src="images/partner-crew.jpg" alt="Crew XXX" class="avatar-img" onerror="this.src='images/default-avatar.jpg'">
+                            </div>
+                            <div class="partner-info">
+                                <p>@HIPHOP ARTIST</p>
+                                <h5>Crew XXX</h5>
+                                <span>음악 프로젝트 연계 한정판 캡슐 어패럴 콜라보레이션 메이트</span>
+                            </div>
+                        </div>
+                        
+                        <div class="partner-card">
+                            <div class="partner-avatar">
+                                <img src="images/partner-sora.jpg" alt="Sora Park" class="avatar-img" onerror="this.src='images/default-avatar.jpg'">
+                            </div>
+                            <div class="partner-info">
+                                <p>@INFLUENCER</p>
+                                <h5>Sora Park</h5>
+                                <span>글로벌 앰버서더, SNS 디지털 캠페인 스너그 핏 스타일링 총괄</span>
+                            </div>
+                        </div>
+                        
+                        <div class="partner-card">
+                            <div class="partner-avatar">
+                                <img src="images/partner-skaters.jpg" alt="Seoul Skaters" class="avatar-img" onerror="this.src='images/default-avatar.jpg'">
+                            </div>
+                            <div class="partner-info">
+                                <p>@CREATIVE UNION</p>
+                                <h5>Seoul Skaters</h5>
+                                <span>서브컬처 언더그라운드 스포츠 스폰서십 및 광고 비주얼 필름 협력</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="scroll-section people-section">
+            <h2 class="scroll-animate">Our Team</h2>
+            <div class="people-grid">
+                <div class="person-card scroll-animate delay-100">
+                    <img src="mainIMG/kim.jpg" alt="김민준 대표" class="person-img">
+                    <div class="person-info"><span>김민준</span><span>대표</span></div>
+                    <p class="person-bio">홍익대학교 시각디자인 졸업 후 SUPER SOCIAL 창업.</p>
+                </div>
+                <div class="person-card scroll-animate delay-250">
+                    <img src="mainIMG/park.jpg" alt="박지우 디렉터" class="person-img">
+                    <div class="person-info"><span>박지우</span><span>디렉터</span></div>
+                    <p class="person-bio">파리 에꼴드라샹브르 수료 후 합류.</p>
+                </div>
+                <div class="person-card scroll-animate delay-350">
+                    <img src="mainIMG/lee.jpg" alt="이서연 마케터" class="person-img">
+                    <div class="person-info"><span>이서연</span><span>마케터</span></div>
+                    <p class="person-bio">SNS 브랜드 캠페인 총괄.</p>
+                </div>
+            </div>
+
+            <footer class="scroll-animate delay-350">
+                <div class="footer-container">
+                    <div class="footer-left">
+                        <div class="footer-title">Customer Service</div>
+                        <p>고객센터: 1544-0000 (평일 11:00 - 17:00 / 주말 휴무)</p>
+                        <p>이메일: cs@supersocial.com</p>
+                    </div>
+                    <div class="footer-right">
+                        <div class="footer-links">
+                            <a href="mailto:contact@supersocial.com">Contact Us</a>
+                            <a href="#">이용약관</a>
+                            <a href="#" style="font-weight: bold; color: #fff;">개인정보처리방침</a>
+                        </div>
+                        <p>(주)슈퍼소셜 | 대표자: 김민준 | 서울시 마포구 홍대로 1길</p>
+                        <p>사업자등록번호: 000-00-00000 | 통신판매업신고: 제 2026-서울마포-0000호</p>
+                    </div>
+                </div>
+                <div class="footer-copyright">
+                    © 2026 SUPER SOCIAL. Powered by Minimalist Interface.
+                </div>
+            </footer>
+        </section>
+    </main>
+</div>
+
+<script>
+    let currentIdx = 0;
+    const sections = document.querySelectorAll('.scroll-section');
+    const totalSections = sections.length;
+    let isMoving = false;
+    let touchStartY = 0;
+
+    function updateSectionAnimations(sectionIndex) {
+        sections.forEach((section, idx) => {
+            const animElements = section.querySelectorAll('.scroll-animate');
+            if (idx === sectionIndex) {
+                animElements.forEach(el => el.classList.add('animated-active'));
+            } else {
+                animElements.forEach(el => el.classList.remove('animated-active'));
+            }
+        });
+    }
+
+    function moveToSection(idx) {
+        if (idx < 0 || idx >= totalSections) return;
+        isMoving = true;
+        currentIdx = idx;
+        
+        const container = document.getElementById('scrollContainer');
+        container.style.transform = `translateY(-${currentIdx * 100}vh)`;
+        
+        updateSectionAnimations(currentIdx);
+
+        setTimeout(() => {
+            isMoving = false;
+        }, 750);
+    }
+
+    window.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        if (isMoving) return;
+
+        if (e.deltaY > 30) {
+            moveToSection(currentIdx + 1);
+        } else if (e.deltaY < -30) {
+            moveToSection(currentIdx - 1);
+        }
+    }, { passive: false });
+
+    window.addEventListener('touchstart', (e) => {
+        touchStartY = e.touches[0].clientY;
+    });
+
+    window.addEventListener('touchmove', (e) => {
+        if (isMoving) return;
+        const touchEndY = e.touches[0].clientY;
+        const diffY = touchStartY - touchEndY;
+
+        if (Math.abs(diffY) > 50) {
+            if (diffY > 0) {
+                moveToSection(currentIdx + 1);
+            } else {
+                moveToSection(currentIdx - 1);
+            }
+        }
+    });
+
+    function toggleStores() {
+        document.getElementById('storeListContainer').classList.toggle('show');
+    }
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg; t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2200);
+    }
+    function setCurrency(type) {
+        localStorage.setItem('currency', type);
+        const langLabel = document.getElementById('navLangLabel');
+        if(langLabel) langLabel.textContent = type === 'KRW' ? 'kr' : 'intl';
+    }
+    window.onload = function() {
+        const user = localStorage.getItem('user');
+        if(user) {
+            document.getElementById('navAuthWrapper').innerHTML = `<button class="btn-mypage" onclick="location.href='mypage.html'">마이페이지</button>`;
+        } else {
+            document.getElementById('navAuthWrapper').innerHTML = `<button class="btn-mypage" onclick="location.href='login.html'">로그인</button>`;
+        }
+        setCurrency(localStorage.getItem('currency') || 'KRW');
+        updateSectionAnimations(0);
+    }
+</script>
+</body>
+</html>

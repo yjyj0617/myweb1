@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUPER SOCIAL - SHOP</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Times New Roman", Times, serif; color: #111; padding-top: 65px; background-color: #fff; }
+        a { text-decoration: none; color: inherit; }
+        button { background: none; border: none; font-family: inherit; cursor: pointer; }
+
+        header { position: fixed; top: 0; left: 0; width: 100%; background: #fff; z-index: 2000; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); }
+        nav { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; height: 65px; }
+        .nav-left { display: flex; gap: 40px; align-items: center; }
+        .nav-link { font-size: 15px; text-transform: lowercase; cursor: pointer; }
+        
+        .logo-center { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 20px; font-weight: bold; letter-spacing: 4px; cursor: pointer; white-space: nowrap; }
+        .nav-right { display: flex; align-items: center; }
+        .btn-mypage { font-size: 13px; border: 1px solid #000; padding: 8px 20px; background-color: #fff; }
+
+        .dropdown-wrapper { position: relative; display: inline-block; }
+        .dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background-color: #fff; border: 1px solid #000; padding: 8px 0; min-width: 90px; box-shadow: 0px 4px 10px rgba(0,0,0,0.05); z-index: 2500; }
+        .dropdown-menu a { display: block; padding: 6px 15px; font-size: 13px; text-align: left; text-transform: uppercase; cursor: pointer; }
+        .dropdown-menu a:hover { background-color: #f5f5f5; }
+        .dropdown-wrapper:hover .dropdown-menu { display: block; }
+
+        .independent-section { padding: 80px 10% 40px 10%; }
+        
+        .section-header { margin-bottom: 30px; }
+        .section-header h3 { font-size: 22px; font-weight: normal; text-transform: uppercase; letter-spacing: 1px; }
+
+        .carousel-outer-container { position: relative; display: flex; align-items: center; width: 100%; margin-bottom: 20px; }
+        .auto-carousel-wrapper { position: relative; overflow: hidden; flex-grow: 1; width: 100%; }
+        .auto-carousel-track { display: flex; width: 100%; }
+        
+        .carousel-slide { min-width: 25%; max-width: 25%; padding-right: 20px; cursor: pointer; flex-shrink: 0; display: flex; flex-direction: column; }
+        .carousel-slide-img { width: 100%; padding-top: 100%; border: 1px solid #000; background-color: #fafafa; position: relative; overflow: hidden; }
+        .product-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity 0.4s ease; }
+        .product-img.img-back { opacity: 0; }
+        
+        .carousel-slide:hover .product-img.img-front { opacity: 0; }
+        .carousel-slide:hover .product-img.img-back { opacity: 1; }
+        
+        .carousel-slide-meta { margin-top: 10px; }
+        .carousel-slide-meta h4 { font-size: 15px; font-weight: normal; margin-bottom: 5px; }
+        
+        .carousel-side-btn { width: 40px; height: 40px; font-size: 18px; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 50%; z-index: 10; flex-shrink: 0; transform: translateY(-28px);}
+        
+        .carousel-dots { display: flex; gap: 6px; justify-content: center; margin-top: 15px; margin-bottom: 40px; }
+        .carousel-dot { width: 7px; height: 7px; border-radius: 50%; background: #ccc; cursor: pointer; }
+        .carousel-dot.active { background: #111; }
+
+        .controls-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 20px; }
+        .category-tabs { display: flex; gap: 20px; flex-wrap: wrap; }
+        .tab-btn { padding: 10px 25px; border: 1px solid #ccc; font-size: 14px; background: #fff; transition: all 0.2s; }
+        .tab-btn.active { background: #000; color: #fff; border-color: #000; }
+
+        .filter-search-right { display: flex; align-items: center; gap: 15px; }
+        .search-container { display: flex; align-items: center; }
+        .search-input { width: 240px; padding: 8px 12px; border: 1px solid #000; font-size: 14px; outline: none; font-family: inherit; }
+        
+        .sort-container { display: flex; align-items: center; }
+        .sort-select { padding: 8px 12px; font-family: inherit; font-size: 14px; border: 1px solid #000; outline: none; background: #fff; cursor: pointer; height: 37px; }
+
+        .products-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; }
+        .product-card { width: 100%; cursor: pointer; position: relative; }
+        .product-img-wrapper { position: relative; width: 100%; padding-top: 120%; border: 1px solid #000; background:#fcfcfc; overflow: hidden; }
+        
+        .product-card:hover .product-img.img-front { opacity: 0; }
+        .product-card:hover .product-img.img-back { opacity: 1; }
+
+        .product-meta { margin-top: 15px; }
+        .product-meta h4 { font-size: 15px; font-weight: normal; margin-bottom: 5px; }
+        .product-wishlist-btn { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,.9); border: 1px solid #ccc; padding: 5px 8px; cursor: pointer; z-index: 10; }
+        .product-wishlist-btn.active { color: #e00; border-color: #e00; }
+
+        footer { background: #111111; color: #888888; padding: 60px 10% 40px 10%; font-size: 12px; line-height: 1.8; border-top: 1px solid #222222; width: 100%; margin-top: 60px; text-align: left; }
+        .footer-container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 30px; max-width: 1400px; margin: 0 auto; }
+        .footer-left, .footer-right { flex: 1; min-width: 250px; }
+        .footer-right { text-align: right; }
+        .footer-title { color: #ffffff; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 15px; font-weight: bold; }
+        .footer-links { margin-bottom: 15px; }
+        .footer-links a { color: #cccccc; text-decoration: none; margin-right: 20px; transition: color 0.2s ease; }
+        .footer-links a:hover { color: #ffffff; }
+        .footer-copyright { margin-top: 40px; font-size: 11px; color: #555555; border-top: 1px solid #222222; padding-top: 20px; text-align: center; }
+        
+        @media (max-width: 992px) {
+            .controls-bar { flex-direction: column; align-items: flex-start; }
+            .filter-search-right { width: 100%; justify-content: space-between; }
+            .search-input { width: 100%; flex-grow: 1; }
+        }
+        @media (max-width: 768px) {
+            .footer-container { flex-direction: column; gap: 20px; }
+            .footer-right { text-align: left; }
+            .products-grid { grid-template-columns: repeat(2, 1fr); }
+            .carousel-slide { min-width: 50%; max-width: 50%; }
+        }
+
+        .main-visual-banner { position: relative; width: 100%; height: 420px; margin-bottom: 70px; overflow: hidden; background: #f5f5f5; border: 1px solid #000; }
+        .main-banner-list { position: relative; width: 100%; height: 100%; }
+        .main-banner-slide { position: absolute; inset: 0; opacity: 0; z-index: 1; transition: opacity 0.5s ease; }
+        .main-banner-slide.active { opacity: 1; z-index: 2; }
+        .main-banner-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .main-banner-arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 10; font-size: 0; width: 42px; height: 42px; border: 1px solid #000; background: rgba(255,255,255,0.85); cursor: pointer; }
+        .main-banner-prev { left: 18px; }
+        .main-banner-next { right: 18px; }
+        .main-banner-prev::before { content: "<"; font-size: 18px; color: #111; }
+        .main-banner-next::before { content: ">"; font-size: 18px; color: #111; }
+        .main-banner-arrow:hover { background: #111; }
+        .main-banner-arrow:hover::before { color: #fff; }
+        .main-banner-dots { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); display: flex; gap: 8px; list-style: none; z-index: 20; }
+        .main-banner-dots li button { width: 8px; height: 8px; border-radius: 50%; border: none; background: rgba(255,255,255,0.6); font-size: 0; padding: 0; cursor: pointer; }
+        .main-banner-dots li.active button { background: #111; }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="nav-left">
+            <a href="shop.html" class="nav-link" style="font-weight:bold;">shop</a>
+            <div class="dropdown-wrapper">
+                <span class="nav-link" id="navLangLabel">kr</span>
+                <div class="dropdown-menu">
+                    <a onclick="setCurrency('KRW')">KR</a>
+                    <a onclick="setCurrency('USD')">INTL</a>
+                </div>
+            </div>
+            <div class="dropdown-wrapper">
+                <a href="lookbook.html" class="nav-link">lookbook</a>
+                <div class="dropdown-menu">
+                    <a href="lookbook.html">25 SS</a>
+                    <a href="lookbook.html">24 FW</a>
+                </div>
+            </div>
+        </div>
+        <div class="logo-center" onclick="location.href='index.html'">SUPER SOCIAL</div>
+        <div class="nav-right" id="navAuthWrapper"></div>
+    </nav>
+</header>
+
+<section class="independent-section">
+    <div class="shop-container">
+        
+        <div class="main-visual-banner" id="mainVisualBanner">
+            <button class="main-banner-arrow main-banner-prev" onclick="moveMainBanner(-1)">Previous</button>
+            <div class="main-banner-list">
+                <a href="shop.html" class="main-banner-slide active">
+                    <img src="mainIMG/banner01.jpg" alt="SUPER SOCIAL 25SS">
+                </a>
+                <a href="shop.html" class="main-banner-slide">
+                    <img src="mainIMG/banner02.jpg" alt="THE DROOGS">
+                </a>
+                <a href="shop.html" class="main-banner-slide">
+                    <img src="mainIMG/banner03.jpg" alt="QG">
+                </a>
+                <a href="shop.html" class="main-banner-slide">
+                    <img src="mainIMG/banner04.jpg" alt="RESTOCK">
+                </a>
+            </div>
+            <button class="main-banner-arrow main-banner-next" onclick="moveMainBanner(1)">Next</button>
+            <ul class="main-banner-dots" id="mainBannerDots">
+                <li class="active" onclick="goMainBanner(0)"><button>1</button></li>
+                <li onclick="goMainBanner(1)"><button>2</button></li>
+                <li onclick="goMainBanner(2)"><button>3</button></li>
+                <li onclick="goMainBanner(3)"><button>4</button></li>
+            </ul>
+        </div>
+
+        
+        <div class="section-header">
+            <h3>NEW ARRIVALS</h3>
+        </div>
+        
+        
+        <div class="carousel-outer-container" onmouseenter="pauseCarousel()" onmouseleave="resumeCarousel()">
+            <button class="carousel-side-btn prev" onclick="manualCarousel(-1)">&lt;</button>
+            <div class="auto-carousel-wrapper" id="autoCarouselWrapper">
+                <div class="auto-carousel-track" id="autoCarouselTrack"></div>
+            </div>
+            <button class="carousel-side-btn next" onclick="manualCarousel(1)">&gt;</button>
+        </div>
+        <div class="carousel-dots" id="carouselDots"></div>
+
+        
+        <div class="controls-bar">
+            <div class="category-tabs">
+                <button class="tab-btn active" onclick="filterCategory(this,'전체')">전체</button>
+                <button class="tab-btn" onclick="filterCategory(this,'상의')">상의</button>
+                <button class="tab-btn" onclick="filterCategory(this,'하의')">하의</button>
+                <button class="tab-btn" onclick="filterCategory(this,'아우터')">아우터</button>
+                <button class="tab-btn" onclick="filterCategory(this,'신발')">신발</button>
+                <button class="tab-btn" onclick="filterCategory(this,'악세서리')">악세서리</button>
+            </div>
+            
+            <div class="filter-search-right">
+                <div class="search-container">
+                    <input type="text" placeholder="Search product..." class="search-input" id="searchInput" oninput="filterProducts()">
+                </div>
+
+                <div class="sort-container">
+                    <select class="sort-select" id="sortSelect" onchange="renderProducts()">
+                        <option value="popular">인기순</option>
+                        <option value="price-asc">가격 낮은순</option>
+                        <option value="price-desc">가격 높은순</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="products-grid" id="productsGrid"></div>
+    </div>
+</section>
+
+<footer>
+    <div class="footer-container">
+        <div class="footer-left">
+            <div class="footer-title">Customer Service</div>
+            <p>고객센터: 1544-0000 (평일 11:00 - 17:00 / 주말 휴무)</p>
+            <p>이메일: cs@supersocial.com</p>
+        </div>
+        <div class="footer-right">
+            <div class="footer-links">
+                <a href="mailto:contact@supersocial.com">Contact Us</a>
+                <a href="#">이용약관</a>
+                <a href="#" style="font-weight: bold; color: #fff;">개인정보처리방침</a>
+            </div>
+            <p>(주)슈퍼소셜 | 대표자: 김민준 | 서울시 마포구 홍대로 1길</p>
+            <p>사업자등록번호: 000-00-00000 | 통신판매업신고: 제 2026-서울마포-0000호</p>
+        </div>
+    </div>
+    <div class="footer-copyright">
+        © 2026 SUPER SOCIAL. Powered by Minimalist Interface.
+    </div>
+</footer>
+
+<script>
+    const defaultProducts = [
+        { id:1,  name:'OVERSIZED TEE',    price:59000,  category:'상의',    desc:'오버사이즈 반팔 티셔츠. 두꺼운 면 소재로 제작.', img:'images/product-1.jpg' },
+        { id:2,  name:'HOODIE',           price:89000,  category:'상의',    desc:'기모 안감 후디. 포켓 내부 기모 처리.', img:'images/product-2.jpg' },
+        { id:3,  name:'STRIPE TEE',       price:65000,  category:'상의',    desc:'스트라이프 패턴 반팔 티셔츠.', img:'images/product-3.jpg' },
+        { id:4,  name:'LOGO LONGSLEEVE',  price:72000,  category:'상의',    desc:'로고 프린트 긴팔 티셔츠.', img:'images/product-4.jpg' },
+        { id:5,  name:'WIDE DENIM',       price:109000, category:'하의',    desc:'와이드 핏 데님 팬츠. 고탄력 원단.', img:'images/product-5.jpg' },
+        { id:6,  name:'CARGO PANTS',      price:99000,  category:'하의',    desc:'카고 포켓 팬츠. 유틸리티 디자인.', img:'images/product-6.jpg' },
+        { id:7,  name:'JOGGER PANTS',     price:85000,  category:'하의',    desc:'조거 팬츠. 밴딩 허리 편안한 핏.', img:'images/product-7.jpg' },
+        { id:8,  name:'SHORTS',           price:69000,  category:'하의',    desc:'반바지. 여름용 경량 소재.', img:'images/product-8.jpg' },
+        { id:9,  name:'OVERSIZED JACKET', price:149000, category:'아우터',  desc:'오버사이즈 자켓. 스냅 버튼 클로저.', img:'images/product-9.jpg' },
+        { id:10, name:'BOMBER JACKET',    price:179000, category:'아우터',  desc:'봄버 자켓. 리브 트리밍 처리.', img:'images/product-10.jpg' },
+        { id:11, name:'COACH JACKET',     price:139000, category:'아우터',  desc:'코치 자켓 나일론 소재.', img:'images/product-11.jpg' },
+        { id:12, name:'CHUNKY SNEAKERS',  price:129000, category:'신발',    desc:'청키 솔 스니커즈. 가죽 어퍼.', img:'images/product-12.jpg' },
+        { id:13, name:'HIGH TOP',         price:145000, category:'신발',    desc:'하이탑 스니커즈.', img:'images/product-13.jpg' },
+        { id:14, name:'LOGO CAP',         price:45000,  category:'악세서리', desc:'브랜드 로고 캡. 6패널 구조.', img:'images/product-14.jpg' },
+        { id:15, name:'SNAP BACK',        price:38000,  category:'악세서리', desc:'스냅백 캡.', img:'images/product-15.jpg' },
+        { id:16, name:'BEANIE',           price:32000,  category:'악세서리', desc:'와플 비니.', img:'images/product-16.jpg' }
+    ];
+
+    const newArrivals = [
+        { id:105, name:'SNAP BACK',        price:35000,  category:'악세서리', desc:'스냅백 캡.', img:'images/product-15.jpg' },
+        { id:106, name:'CARGO SHORTS',      price:79000,  category:'하의',    desc:'카고 쇼츠.', img:'images/product-8.jpg' },
+        { id:107, name:'COACH JACKET',      price:139000, category:'아우터',  desc:'코치 자켓 신상.', img:'images/product-11.jpg' },
+        { id:108, name:'HIGH TOP',          price:145000, category:'신발',    desc:'하이탑 신상.', img:'images/product-13.jpg' },
+        { id:101, name:'25SS HOODIE',       price:99000,  category:'상의',    desc:'25SS 시즌 후디.', img:'images/product-2.jpg' },
+        { id:102, name:'NEW ARRIVALS TEE',  price:39000,  category:'상의',    desc:'신상품 반팔 티셔츠. 100% 면 소재.', img:'images/product-3.jpg' },
+        { id:103, name:'WIDE PANTS',        price:89000,  category:'하의',    desc:'와이드 핏 팬츠. 폴리 혼방.', img:'images/product-5.jpg' },
+        { id:104, name:'LOGO CAP',          price:45000,  category:'악세서리', desc:'브랜드 로고 캡 모자.', img:'images/product-14.jpg' }
+    ];
+
+    let localData = localStorage.getItem('allProducts');
+    let allProducts = defaultProducts;
+
+    if (localData) {
+        try {
+            let parsed = JSON.parse(localData);
+            if (parsed.length === 0 || !parsed[0].hasOwnProperty('img')) {
+                localStorage.setItem('allProducts', JSON.stringify(defaultProducts));
+                allProducts = defaultProducts;
+            } else {
+                allProducts = parsed;
+            }
+        } catch(e) {
+            localStorage.setItem('allProducts', JSON.stringify(defaultProducts));
+            allProducts = defaultProducts;
+        }
+    } else {
+        localStorage.setItem('allProducts', JSON.stringify(defaultProducts));
+    }
+
+    let currentShopCategory = '전체';
+    const CLONE_COUNT = 4;
+    let carouselIndex = CLONE_COUNT; 
+    let isTransitioning = false;
+    let carouselTimer = null;
+    let currentCurrency = localStorage.getItem('currency') || 'KRW';
+
+    function formatPrice(price) {
+        return currentCurrency === 'USD' ? `$${Math.round(price/1000)}` : `${price.toLocaleString()}원`;
+    }
+
+    function getBackImgItems(frontImgPath) {
+        if (!frontImgPath) return '';
+        return frontImgPath.replace(/(\.[\w\d]+)$/, '-b$1');
+    }
+
+    function setCurrency(type) {
+        localStorage.setItem('currency', type);
+        currentCurrency = type;
+        document.getElementById('navLangLabel').textContent = type === 'KRW' ? 'kr' : 'intl';
+        buildCarousel();
+        renderProducts();
+    }
+
+    function buildCarousel() {
+        const track = document.getElementById('autoCarouselTrack');
+        const dots = document.getElementById('carouselDots');
+        if(!track || !dots) return;
+        
+        const headClones = newArrivals.slice(-CLONE_COUNT);
+        const tailClones = newArrivals.slice(0, CLONE_COUNT);
+        const loopItems = [...headClones, ...newArrivals, ...tailClones];
+
+        track.innerHTML = loopItems.map(item => {
+            const backImg = getBackImgItems(item.img);
+            return `
+                <div class="carousel-slide" onclick="openDetail(${JSON.stringify(item).replace(/"/g, '&quot;')}, true)">
+                    <div class="carousel-slide-img">
+                        <img src="${item.img}" alt="${item.name}" class="product-img img-front">
+                        <img src="${backImg}" alt="${item.name}" class="product-img img-back" onerror="this.style.opacity=0; this.previousElementSibling.style.opacity=1;">
+                    </div>
+                    <div class="carousel-slide-meta">
+                        <h4>${item.name}</h4>
+                        <p>${formatPrice(item.price)}</p>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        dots.innerHTML = newArrivals.map((_, i) => `<span class="carousel-dot ${i===(carouselIndex-CLONE_COUNT)?'active':''}" onclick="goCarousel(${i+CLONE_COUNT})"></span>`).join('');
+        
+        track.style.transition = 'none';
+        track.style.transform = `translateX(-${carouselIndex * 25}%)`;
+    }
+
+    function goCarousel(idx) { 
+        if (isTransitioning) return;
+        carouselIndex = idx; 
+        updateCarouselPosition(true); 
+    }
+
+    function updateCarouselPosition(useAnimation = true) {
+        const track = document.getElementById('autoCarouselTrack');
+        if(!track) return;
+        
+        if (useAnimation) {
+            isTransitioning = true;
+            track.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)';
+        } else {
+            track.style.transition = 'none';
+        }
+        
+        track.style.transform = `translateX(-${carouselIndex * 25}%)`;
+        
+        let dotIdx = carouselIndex - CLONE_COUNT;
+        if (dotIdx < 0) dotIdx = newArrivals.length + dotIdx;
+        if (dotIdx >= newArrivals.length) dotIdx = dotIdx - newArrivals.length;
+        
+        document.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === dotIdx));
+    }
+
+    setTimeout(() => {
+        const track = document.getElementById('autoCarouselTrack');
+        if(track) {
+            track.addEventListener('transitionend', () => {
+                isTransitioning = false;
+                if (carouselIndex >= newArrivals.length + CLONE_COUNT) {
+                    carouselIndex = CLONE_COUNT;
+                    updateCarouselPosition(false);
+                }
+                if (carouselIndex < CLONE_COUNT) {
+                    carouselIndex = newArrivals.length + carouselIndex;
+                    updateCarouselPosition(false);
+                }
+            });
+        }
+    }, 100);
+
+    function pauseCarousel() { clearInterval(carouselTimer); }
+    function resumeCarousel() { 
+        carouselTimer = setInterval(() => { 
+            if (!isTransitioning) {
+                carouselIndex++;
+                updateCarouselPosition(true);
+            }
+        }, 1900);
+    }
+
+    function manualCarousel(dir) { 
+        if (isTransitioning) return;
+        carouselIndex += dir;
+        updateCarouselPosition(true); 
+    }
+
+    function getFilteredProducts() {
+        const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
+        return allProducts.filter(p => (currentShopCategory === '전체' || p.category === currentShopCategory) && p.name.toLowerCase().includes(q));
+    }
+
+    function renderProducts() {
+        const grid = document.getElementById('productsGrid');
+        let filtered = getFilteredProducts();
+
+        const sortType = document.getElementById('sortSelect')?.value || 'popular';
+        if (sortType === 'price-asc') {
+            filtered.sort((a, b) => a.price - b.price);
+        } else if (sortType === 'price-desc') {
+            filtered.sort((a, b) => b.price - a.price);
+        } else if (sortType === 'popular') {
+            // 💡 찜 상태정렬(wished 조건)을 제거하여 찜을 눌러도 상단 배치되지 않고 기본 배열 순서를 유지합니다.
+            filtered.sort((a, b) => a.id - b.id);
+        }
+
+        grid.innerHTML = filtered.map(p => {
+            const backImg = getBackImgItems(p.img);
+            return `
+                <div class="product-card" onclick="openDetail(${JSON.stringify(p).replace(/"/g, '&quot;')}, false)">
+                    <div class="product-img-wrapper">
+                        <img src="${p.img}" alt="${p.name}" class="product-img img-front">
+                        <img src="${backImg}" alt="${p.name}" class="product-img img-back" onerror="this.style.opacity=0; this.previousElementSibling.style.opacity=1;">
+                        <button class="product-wishlist-btn ${p.wished?'active':''}" onclick="event.stopPropagation(); toggleWish(${p.id})">${p.wished?'♥':'♡'}</button>
+                    </div>
+                    <div class="product-meta"><h4>${p.name}</h4><p>${formatPrice(p.price)}</p></div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function filterCategory(btn, cat) {
+        currentShopCategory = cat;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active'); 
+        renderProducts();
+    }
+    
+    function filterProducts() { renderProducts(); }
+
+    function toggleWish(id) {
+        const p = allProducts.find(x => x.id === id);
+        if(!p) return;
+        p.wished = !p.wished;
+        localStorage.setItem('allProducts', JSON.stringify(allProducts));
+        renderProducts();
+    }
+
+    function openDetail(obj, isNew) {
+        localStorage.setItem('selectedProduct', JSON.stringify(obj));
+        location.href = 'detail.html';
+    }
+
+    window.onload = function() {
+        const user = localStorage.getItem('user');
+        if(user) {
+            document.getElementById('navAuthWrapper').innerHTML = `<button class="btn-mypage" onclick="location.href='mypage.html'">마이페이지</button>`;
+        } else {
+            document.getElementById('navAuthWrapper').innerHTML = `<button class="btn-mypage" onclick="location.href='login.html'">로그인</button>`;
+        }
+        document.getElementById('navLangLabel').textContent = currentCurrency === 'KRW' ? 'kr' : 'intl';
+        buildCarousel(); resumeCarousel(); renderProducts();
+        startMainBannerTimer();
+    }
+
+    let mainBannerIndex = 0;
+    let mainBannerTimer = null;
+
+    function showMainBanner(index) {
+        const slides = document.querySelectorAll('.main-banner-slide');
+        const dots = document.querySelectorAll('.main-banner-dots li');
+        if (!slides.length) return;
+
+        if (index < 0) index = slides.length - 1;
+        if (index >= slides.length) index = 0;
+
+        mainBannerIndex = index;
+        slides.forEach((slide, i) => slide.classList.toggle('active', i === mainBannerIndex));
+        dots.forEach((dot, i) => dot.classList.toggle('active', i === mainBannerIndex));
+    }
+
+    function moveMainBanner(dir) { showMainBanner(mainBannerIndex + dir); resetMainBannerTimer(); }
+    function goMainBanner(index) { showMainBanner(index); resetMainBannerTimer(); }
+    function startMainBannerTimer() { mainBannerTimer = setInterval(() => { showMainBanner(mainBannerIndex + 1); }, 3500); }
+    function resetMainBannerTimer() { clearInterval(mainBannerTimer); startMainBannerTimer(); }
+</script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUPER SOCIAL - MYPAGE</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Times New Roman", Times, serif; color: #111; padding-top: 65px; }
+        a { text-decoration: none; color: inherit; }
+        button { background: none; border: none; font-family: inherit; cursor: pointer; }
+
+        header { position: fixed; top: 0; left: 0; width: 100%; background: #fff; border-bottom: 1px solid #000; z-index: 2000; }
+        nav { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; height: 65px; }
+        .nav-left { display: flex; gap: 40px; align-items: center; }
+        .nav-link { font-size: 15px; text-transform: lowercase; cursor: pointer; }
+        
+        .logo-center { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 20px; font-weight: bold; letter-spacing: 4px; cursor: pointer; white-space: nowrap; }
+        .nav-right { display: flex; align-items: center; }
+        .btn-mypage { font-size: 13px; border: 1px solid #000; padding: 8px 20px; background-color: #fff; }
+
+        
+        .dropdown-wrapper { position: relative; display: inline-block; }
+        .dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background-color: #fff; border: 1px solid #000; padding: 8px 0; min-width: 90px; box-shadow: 0px 4px 10px rgba(0,0,0,0.05); z-index: 2500; }
+        .dropdown-menu a { display: block; padding: 6px 15px; font-size: 13px; text-align: left; text-transform: uppercase; cursor: pointer; }
+        .dropdown-menu a:hover { background-color: #f5f5f5; }
+        .dropdown-wrapper:hover .dropdown-menu { display: block; }
+
+        .independent-section { padding: 80px 10%; max-width: 800px; margin: 0 auto; }
+        
+        .mypage-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #000; padding-bottom: 25px; margin-bottom: 40px; }
+        .user-info-left h2 { font-size: 26px; font-weight: normal; }
+        
+        .user-meta-right { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+        .point-display { font-size: 15px; font-weight: bold; letter-spacing: 0.5px; }
+        .action-buttons-group { display: flex; gap: 10px; }
+        .action-buttons-group button { border: 1px solid #000; padding: 8px 18px; background: #fff; font-size: 13px; cursor: pointer; }
+        .action-buttons-group button:hover { background: #f5f5f5; }
+
+        .delivery-section h3 { font-size: 18px; font-weight: normal; margin-bottom: 20px; }
+        .delivery-carousel { display: flex; gap: 15px; margin-top: 15px; overflow-x: auto; padding-bottom: 10px; }
+        .d-item { width: 100px; height: 100px; border: 1px solid #000; background: #fafafa; flex-shrink: 0; position: relative; }
+        .d-item::before { content: "배송중"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 12px; color: #888; }
+        
+       
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="nav-left">
+            <a href="shop.html" class="nav-link">shop</a>
+            <div class="dropdown-wrapper">
+                <span class="nav-link" id="navLangLabel">kr</span>
+                <div class="dropdown-menu">
+                    <a onclick="setCurrency('KRW')">KR</a>
+                    <a onclick="setCurrency('USD')">INTL</a>
+                </div>
+            </div>
+            <div class="dropdown-wrapper">
+                <a href="lookbook.html" class="nav-link">lookbook</a>
+                <div class="dropdown-menu">
+                    <a href="lookbook.html">25 SS</a>
+                    <a href="lookbook.html">24 FW</a>
+                </div>
+            </div>
+        </div>
+        <div class="logo-center" onclick="location.href='index.html'">SUPER SOCIAL</div>
+        <div class="nav-right" id="navAuthWrapper"></div>
+    </nav>
+</header>
+
+<section class="independent-section">
+    <div class="mypage-header">
+        <div class="user-info-left">
+            <h2 id="mypageUsername">고객님</h2>
+        </div>
+        <div class="user-meta-right">
+            <div class="point-display">MY POINT: <span style="text-decoration: underline;">12,500p</span></div>
+            <div class="action-buttons-group">
+                <button onclick="location.href='wishlist.html'">찜 목록</button>
+                <button onclick="location.href='cart.html'">장바구니</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="delivery-section">
+        <h3>배송 상품 현황 (<span id="countSpan" style="font-weight:bold;">0</span>)</h3>
+        <div class="delivery-carousel" id="deliveryContainer"></div>
+    </div>
+</section>
+
+<script>
+    function logout() { 
+        localStorage.removeItem('user'); 
+        location.href='index.html'; 
+    }
+
+    
+    function showToast(msg) {}
+
+    function setCurrency(type) {
+        localStorage.setItem('currency', type);
+        document.getElementById('navLangLabel').textContent = type === 'KRW' ? 'kr' : 'intl';
+    }
+    
+    window.onload = function() {
+        const user = localStorage.getItem('user');
+        if(!user) { 
+            location.href = 'login.html'; 
+            return; 
+        }
+        document.getElementById('mypageUsername').textContent = user + '님';
+        
+        document.getElementById('navAuthWrapper').innerHTML = `<button class="btn-mypage" onclick="logout()">로그아웃</button>`;
+        
+        let currentCurrency = localStorage.getItem('currency') || 'KRW';
+        document.getElementById('navLangLabel').textContent = currentCurrency === 'KRW' ? 'kr' : 'intl';
+        
+        const count = parseInt(localStorage.getItem('shippingCount')) || 0;
+        document.getElementById('countSpan').textContent = count;
+        const container = document.getElementById('deliveryContainer');
+        
+        if(count > 0) {
+            container.innerHTML = Array.from({length:count}, () => `<div class="d-item"></div>`).join('');
+        } else {
+            container.innerHTML = '<p style="color:#888; font-size:14px; padding: 20px 0;">주문한 내역이 없습니다.</p>';
+        }
+    }
+</script>
+</body>
+</html>
